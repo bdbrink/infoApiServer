@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"os"
 	"time"
 )
 
@@ -14,6 +15,16 @@ type LocationResponse struct {
 	Country   string  `json:"country"`
 	Latitude  float64 `json:"loc"`
 	Longitude float64 `json:"loc"`
+}
+
+type ServerInfo struct {
+	ServerName    string `json:"server_name"`
+	ServerIP      string `json:"server_ip"`
+	CurrentTime   string `json:"current_time"`
+	UserAgent     string `json:"user_agent"`
+	ClientCity    string `json:"client_city"`
+	ClientRegion  string `json:"client_region"`
+	ClientCountry string `json:"client_country"`
 }
 
 func getCurrentTimeAndLocation(w http.ResponseWriter, r *http.Request) {
@@ -43,12 +54,28 @@ func getCurrentTimeAndLocation(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Get the server information
+	serverName, _ := os.Hostname()
+	serverIP := "127.0.0.1" // Replace with the actual server IP
+
 	fmt.Printf("Request from IP: %s\n", ipAddress)
 	fmt.Printf("User-Agent: %s\n", userAgent)
 	fmt.Printf("Location: %s, %s, %s\n", location.City, location.Region, location.Country)
 
+	// Create a ServerInfo struct
+	serverInfo := ServerInfo{
+		ServerName:    serverName,
+		ServerIP:      serverIP,
+		CurrentTime:   timeString,
+		UserAgent:     userAgent,
+		ClientCity:    location.City,
+		ClientRegion:  location.Region,
+		ClientCountry: location.Country,
+	}
+
+	// Convert the ServerInfo struct to JSON and send it as the response
 	w.Header().Set("Content-Type", "application/json")
-	fmt.Fprintf(w, `{"utc_time": "%s", "user_agent": "%s", "location": "%s, %s, %s"}`, timeString, userAgent, location.City, location.Region, location.Country)
+	json.NewEncoder(w).Encode(serverInfo)
 }
 
 func main() {
