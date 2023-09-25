@@ -43,12 +43,10 @@ func getCurrentTimeAndLocation(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Log the IP address, User-Agent, and location
 	fmt.Printf("Request from IP: %s\n", ipAddress)
 	fmt.Printf("User-Agent: %s\n", userAgent)
 	fmt.Printf("Location: %s, %s, %s\n", location.City, location.Region, location.Country)
 
-	// Return the time, User-Agent, and location as a JSON response
 	w.Header().Set("Content-Type", "application/json")
 	fmt.Fprintf(w, `{"utc_time": "%s", "user_agent": "%s", "location": "%s, %s, %s"}`, timeString, userAgent, location.City, location.Region, location.Country)
 }
