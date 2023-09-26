@@ -78,9 +78,17 @@ func getCurrentTimeAndLocation(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(serverInfo)
 }
 
+func handleRoot(w http.ResponseWriter, r *http.Request) {
+	// Provide a meaningful response for the root path ("/")
+	fmt.Fprintf(w, "Welcome to the server! Use '/current-time-and-location' for time and location information.")
+}
+
 func main() {
 	// Define a route for getting the current UTC time and location
 	http.HandleFunc("/current-time-and-location", getCurrentTimeAndLocation)
+
+	// Define a route for the root path ("/")
+	http.HandleFunc("/", handleRoot)
 
 	// Start the server
 	port := 8080
