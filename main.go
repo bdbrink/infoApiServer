@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"runtime"
 	"time"
 )
 
@@ -90,14 +91,24 @@ func handleInfo(w http.ResponseWriter, r *http.Request) {
 	currentTime := time.Now()
 	uptime := currentTime.Sub(startTime)
 
-	// Create a response with the server runtime
-	response := fmt.Sprintf("Server has been running for: %s", uptime.String())
+	// Get information about the Go runtime
+	goVersion := runtime.Version()
+	goOS := runtime.GOOS
+	goArch := runtime.GOARCH
+
+	// Additional server information
+	serverInfo := fmt.Sprintf("Server Information:\n"+
+		" - Uptime: %s\n"+
+		" - Go Version: %s\n"+
+		" - OS: %s\n"+
+		" - Architecture: %s\n"+
+		" - Programming Language: Go", uptime.String(), goVersion, goOS, goArch)
 
 	// Set the response content type
 	w.Header().Set("Content-Type", "text/plain")
 
 	// Write the response to the client
-	fmt.Fprintf(w, response)
+	fmt.Fprintf(w, serverInfo)
 }
 
 func main() {
