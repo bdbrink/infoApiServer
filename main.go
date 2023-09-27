@@ -27,6 +27,8 @@ type ServerInfo struct {
 	ClientCountry string `json:"client_country"`
 }
 
+var startTime time.Time
+
 func getCurrentTimeAndLocation(w http.ResponseWriter, r *http.Request) {
 	// Get the IP address of the requester
 	ipAddress := r.RemoteAddr
@@ -83,12 +85,29 @@ func handleRoot(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Welcome to the server! Use '/current-time-and-location' for time and location information.")
 }
 
+func handleInfo(w http.ResponseWriter, r *http.Request) {
+	// Calculate the server's current runtime
+	currentTime := time.Now()
+	uptime := currentTime.Sub(startTime)
+
+	// Create a response with the server runtime
+	response := fmt.Sprintf("Server has been running for: %s", uptime.String())
+
+	// Set the response content type
+	w.Header().Set("Content-Type", "text/plain")
+
+	// Write the response to the client
+	fmt.Fprintf(w, response)
+}
+
 func main() {
 	// Define a route for getting the current UTC time and location
 	http.HandleFunc("/current-time-and-location", getCurrentTimeAndLocation)
 
 	// Define a route for the root path ("/")
 	http.HandleFunc("/", handleRoot)
+
+	http.HandleFunc("/info", handleInfo)
 
 	// Start the server
 	port := 8080
