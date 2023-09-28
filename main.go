@@ -111,14 +111,34 @@ func handleInfo(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, serverInfo)
 }
 
+func handleUptime(w http.ResponseWriter, r *http.Request) {
+	// Calculate the server's current uptime
+	currentTime := time.Now()
+	uptime := currentTime.Sub(startTime)
+
+	// Set the response content type
+	w.Header().Set("Content-Type", "text/plain")
+
+	// Write the uptime as a response
+	fmt.Fprintf(w, "Uptime: %s", uptime.String())
+}
+
+func handleHealthCheck(w http.ResponseWriter, r *http.Request) {
+	// You can add custom health check logic here
+	// For simplicity, we'll just respond with a 200 OK
+	w.WriteHeader(http.StatusOK)
+	fmt.Fprint(w, "OK")
+}
+
 func main() {
 	// Define a route for getting the current UTC time and location
 	http.HandleFunc("/current-time-and-location", getCurrentTimeAndLocation)
 
 	// Define a route for the root path ("/")
 	http.HandleFunc("/", handleRoot)
-
 	http.HandleFunc("/info", handleInfo)
+	http.HandleFunc("/uptime", handleUptime)
+	http.HandleFunc("/healthcheck", handleHealthCheck)
 
 	// Start the server
 	port := 8080
