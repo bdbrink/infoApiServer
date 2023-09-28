@@ -130,6 +130,25 @@ func handleHealthCheck(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprint(w, "OK")
 }
 
+func handleEndpoints(w http.ResponseWriter, r *http.Request) {
+	// Define a list of available endpoints
+	endpoints := []string{
+		"/info - Get server information",
+		"/uptime - Get server uptime",
+		"/healthcheck - Perform a server health check",
+		"/endpoints - List available endpoints",
+	}
+
+	// Set the response content type
+	w.Header().Set("Content-Type", "text/plain")
+
+	// Write the list of available endpoints as a response
+	fmt.Fprintln(w, "Available Endpoints:")
+	for _, endpoint := range endpoints {
+		fmt.Fprintln(w, endpoint)
+	}
+}
+
 func main() {
 	// Define a route for getting the current UTC time and location
 	http.HandleFunc("/current-time-and-location", getCurrentTimeAndLocation)
@@ -139,6 +158,7 @@ func main() {
 	http.HandleFunc("/info", handleInfo)
 	http.HandleFunc("/uptime", handleUptime)
 	http.HandleFunc("/healthcheck", handleHealthCheck)
+	http.HandleFunc("/endpoints", handleEndpoints)
 
 	// Start the server
 	port := 8080
