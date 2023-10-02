@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 	"runtime"
+	"sync"
 	"time"
 )
 
@@ -28,7 +29,16 @@ type ServerInfo struct {
 	ClientCountry string `json:"client_country"`
 }
 
-var startTime time.Time
+var (
+	startTime   time.Time
+	dataStorage map[string]interface{}
+	mu          sync.Mutex
+)
+
+func init() {
+	// Initialize the data storage map
+	dataStorage = make(map[string]interface{})
+}
 
 func getCurrentTimeAndLocation(w http.ResponseWriter, r *http.Request) {
 	// Get the IP address of the requester
@@ -149,6 +159,51 @@ func handleEndpoints(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func handleData(w http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case http.MethodGet:
+		// Retrieve data from the storage
+		mu.Lock()
+		defer mu.Unlock()
+
+		key := r.URL.Query().Get("key")
+		if val, ok := dataStorage[key]; ok {
+			response, _ := json.Marshal(map[string]interface{}{"key": key, "value": val})
+			w.Header().Set("Content-Type", "application/json")
+			w.Write(response)
+		} else {
+			http.Error(w, "Key not found", http.StatusNotFound)
+		}
+
+	case http.MethodPost:
+		// Store data in the storage
+		mu.Lock()
+		defer mu.Unlock()
+
+		var data map[string]interface{}
+		err := json.NewDecoder(r.Body).Decode(&data)
+		if err != nil {
+			http.Error(w, "Invalid JSON data", http.StatusBadRequest)
+			return
+		}
+
+		key, ok := data["key"].(string)
+		if !ok {
+			http.Error(w, "Invalid key", http.StatusBadRequest)
+			return
+		}
+
+		value := data["value"]
+		dataStorage[key] = value
+
+		w.WriteHeader(http.StatusCreated)
+		fmt.Fprintf(w, "Data stored successfully")
+
+	default:
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+	}
+}
+
 func main() {
 	// Define a route for getting the current UTC time and location
 	http.HandleFunc("/current-time-and-location", getCurrentTimeAndLocation)
@@ -159,6 +214,7 @@ func main() {
 	http.HandleFunc("/uptime", handleUptime)
 	http.HandleFunc("/healthcheck", handleHealthCheck)
 	http.HandleFunc("/endpoints", handleEndpoints)
+	http.HandleFunc("/data", handleData)
 
 	// Start the server
 	port := 8080
