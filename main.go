@@ -20,13 +20,15 @@ type LocationResponse struct {
 }
 
 type ServerInfo struct {
-	ServerName    string `json:"server_name"`
-	ServerIP      string `json:"server_ip"`
-	CurrentTime   string `json:"current_time"`
-	UserAgent     string `json:"user_agent"`
-	ClientCity    string `json:"client_city"`
-	ClientRegion  string `json:"client_region"`
-	ClientCountry string `json:"client_country"`
+	ServerName    string  `json:"server_name"`
+	ServerIP      string  `json:"server_ip"`
+	CurrentTime   string  `json:"current_time"`
+	UserAgent     string  `json:"user_agent"`
+	ClientCity    string  `json:"client_city"`
+	ClientRegion  string  `json:"client_region"`
+	ClientCountry string  `json:"client_country"`
+	Latitude      float64 `json:"latitude"`
+	Longitude     float64 `json:"longitude"`
 }
 
 var (
@@ -84,6 +86,8 @@ func getCurrentTimeAndLocation(w http.ResponseWriter, r *http.Request) {
 		ClientCity:    location.City,
 		ClientRegion:  location.Region,
 		ClientCountry: location.Country,
+		Latitude:      location.Latitude,  // Assign latitude here
+		Longitude:     location.Longitude, // Assign longitude here
 	}
 
 	// Convert the ServerInfo struct to JSON and send it as the response
