@@ -15,8 +15,8 @@ type LocationResponse struct {
 	City      string  `json:"city"`
 	Region    string  `json:"region"`
 	Country   string  `json:"country"`
-	Latitude  float64 `json:"loc"`
-	Longitude float64 `json:"loc"`
+	Latitude  float64 `json:"latitude"`
+	Longitude float64 `json:"longitude"`
 }
 
 type ServerInfo struct {
