@@ -252,6 +252,7 @@ func main() {
 	http.HandleFunc("/healthcheck", handleHealthCheck)
 	http.HandleFunc("/endpoints", handleEndpoints)
 	http.HandleFunc("/data", handleData)
+	http.HandleFunc("/input", handleJsonInput)
 
 	// Start the server
 	port := 8080
