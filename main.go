@@ -209,7 +209,7 @@ func handleData(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func handleCustom(w http.ResponseWriter, r *http.Request) {
+func handleJsonInput(w http.ResponseWriter, r *http.Request) {
 	// Check if the request method is POST
 	if r.Method != http.MethodPost {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
