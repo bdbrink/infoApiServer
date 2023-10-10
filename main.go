@@ -241,6 +241,56 @@ func handleJsonInput(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(response)
 }
 
+func handleCalculator(w http.ResponseWriter, r *http.Request) {
+	// Check if the request method is POST
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	// Decode the request body
+	var request struct {
+		Num1     float64 `json:"num1"`
+		Num2     float64 `json:"num2"`
+		Operator string  `json:"operator"`
+	}
+
+	err := json.NewDecoder(r.Body).Decode(&request)
+	if err != nil {
+		http.Error(w, "Invalid JSON data", http.StatusBadRequest)
+		return
+	}
+
+	// Perform the calculation based on the operator
+	var result float64
+	switch request.Operator {
+	case "+":
+		result = request.Num1 + request.Num2
+	case "-":
+		result = request.Num1 - request.Num2
+	case "*":
+		result = request.Num1 * request.Num2
+	case "/":
+		if request.Num2 == 0 {
+			http.Error(w, "Division by zero is not allowed", http.StatusBadRequest)
+			return
+		}
+		result = request.Num1 / request.Num2
+	default:
+		http.Error(w, "Invalid operator", http.StatusBadRequest)
+		return
+	}
+
+	// Prepare the response
+	response := map[string]interface{}{
+		"result": result,
+	}
+
+	// Convert the response to JSON and send it
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(response)
+}
+
 func main() {
 	// Define a route for getting the current UTC time and location
 	http.HandleFunc("/current-time-and-location", getCurrentTimeAndLocation)
