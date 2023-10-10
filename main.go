@@ -303,6 +303,7 @@ func main() {
 	http.HandleFunc("/endpoints", handleEndpoints)
 	http.HandleFunc("/data", handleData)
 	http.HandleFunc("/input", handleJsonInput)
+	http.HandleFunc("/calculate", handleCalculator)
 
 	// Start the server
 	port := 8080
