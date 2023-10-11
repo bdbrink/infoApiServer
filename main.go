@@ -334,6 +334,7 @@ func main() {
 	http.HandleFunc("/data", handleData)
 	http.HandleFunc("/input", handleJsonInput)
 	http.HandleFunc("/calculate", handleCalculator)
+	http.HandleFunc("/quote", handleQuote)
 
 	// Start the server
 	port := 8080
