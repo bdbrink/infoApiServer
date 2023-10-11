@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"math/rand"
 	"net/http"
 	"os"
 	"runtime"
@@ -37,6 +38,14 @@ var (
 	dataStorage map[string]interface{}
 	mu          sync.Mutex
 )
+
+var quotes = []string{
+	"The greatest glory in living lies not in never falling, but in rising every time we fall. - Nelson Mandela",
+	"Life is what happens when you're busy making other plans. - John Lennon",
+	"Get busy living or get busy dying. - Stephen King",
+	"You have within you right now, everything you need to deal with whatever the world can throw at you. - Brian Tracy",
+	"Life is really simple, but we insist on making it complicated. - Confucius",
+}
 
 func init() {
 	// Initialize the data storage map
@@ -284,6 +293,27 @@ func handleCalculator(w http.ResponseWriter, r *http.Request) {
 	// Prepare the response
 	response := map[string]interface{}{
 		"result": result,
+	}
+
+	// Convert the response to JSON and send it
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(response)
+}
+
+func handleQuote(w http.ResponseWriter, r *http.Request) {
+	// Check if the request method is GET
+	if r.Method != http.MethodGet {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	// Generate a random index to select a quote from the list
+	rand.Seed(time.Now().UnixNano())
+	randomIndex := rand.Intn(len(quotes))
+
+	// Prepare the response
+	response := map[string]interface{}{
+		"quote": quotes[randomIndex],
 	}
 
 	// Convert the response to JSON and send it
