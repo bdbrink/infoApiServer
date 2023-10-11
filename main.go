@@ -322,8 +322,6 @@ func handleQuote(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	// Define a route for getting the current UTC time and location
-	http.HandleFunc("/current-time-and-location", getCurrentTimeAndLocation)
 
 	// Define a route for the root path ("/")
 	http.HandleFunc("/", handleRoot)
@@ -335,6 +333,7 @@ func main() {
 	http.HandleFunc("/input", handleJsonInput)
 	http.HandleFunc("/calculate", handleCalculator)
 	http.HandleFunc("/quote", handleQuote)
+	http.HandleFunc("/current-time-and-location", getCurrentTimeAndLocation)
 
 	// Start the server
 	port := 8080
