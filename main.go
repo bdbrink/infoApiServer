@@ -367,6 +367,7 @@ func main() {
 	http.HandleFunc("/calculate", handleCalculator)
 	http.HandleFunc("/quote", handleQuote)
 	http.HandleFunc("/current-time-and-location", getCurrentTimeAndLocation)
+	http.HandleFunc("/random-number", handleRandomNumber)
 
 	// Start the server
 	port := 8080
