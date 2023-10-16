@@ -321,6 +321,39 @@ func handleQuote(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(response)
 }
 
+func handleRandomNumber(w http.ResponseWriter, r *http.Request) {
+	// Check if the request method is POST
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	// Decode the request body
+	var request struct {
+		Min int `json:"min"`
+		Max int `json:"max"`
+	}
+
+	err := json.NewDecoder(r.Body).Decode(&request)
+	if err != nil {
+		http.Error(w, "Invalid JSON data", http.StatusBadRequest)
+		return
+	}
+
+	// Generate a random number within the specified range
+	rand.Seed(time.Now().UnixNano())
+	randomNumber := rand.Intn(request.Max-request.Min+1) + request.Min
+
+	// Prepare the response
+	response := map[string]interface{}{
+		"random_number": randomNumber,
+	}
+
+	// Convert the response to JSON and send it
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(response)
+}
+
 func main() {
 
 	// Define a route for the root path ("/")
