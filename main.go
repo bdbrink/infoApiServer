@@ -355,46 +355,56 @@ func handleRandomNumber(w http.ResponseWriter, r *http.Request) {
 }
 
 func handleCheckPalindrome(w http.ResponseWriter, r *http.Request) {
-	// Check if the request method is POST
-	if r.Method != http.MethodPost {
-		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-		return
-	}
-
-	// Decode the request body
-	var request struct {
-		Word string `json:"word"`
-	}
-
-	err := json.NewDecoder(r.Body).Decode(&request)
-	if err != nil {
-		http.Error(w, "Invalid JSON data", http.StatusBadRequest)
-		return
-	}
-
-	// Function to check if the word is a palindrome
-	isPalindrome := func(word string) bool {
-		runes := []rune(word)
-		length := len(runes)
-		for i := 0; i < length/2; i++ {
-			if runes[i] != runes[length-1-i] {
-				return false
-			}
+	if r.Method == http.MethodPost {
+		// Handle POST request to check if the given word is a palindrome
+		var request struct {
+			Word string `json:"word"`
 		}
-		return true
+
+		err := json.NewDecoder(r.Body).Decode(&request)
+		if err != nil {
+			http.Error(w, "Invalid JSON data", http.StatusBadRequest)
+			return
+		}
+
+		// Function to check if the word is a palindrome
+		isPalindrome := func(word string) bool {
+			runes := []rune(word)
+			length := len(runes)
+			for i := 0; i < length/2; i++ {
+				if runes[i] != runes[length-1-i] {
+					return false
+				}
+			}
+			return true
+		}
+
+		// Check if the given word is a palindrome
+		result := isPalindrome(request.Word)
+
+		// Prepare the response
+		response := map[string]interface{}{
+			"is_palindrome": result,
+		}
+
+		// Convert the response to JSON and send it
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(response)
+	} else if r.Method == http.MethodGet {
+		// Handle GET request to return a sample palindrome word
+		palindrome := "radar"
+
+		// Prepare the response
+		response := map[string]interface{}{
+			"palindrome": palindrome,
+		}
+
+		// Convert the response to JSON and send it
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(response)
+	} else {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 	}
-
-	// Check if the given word is a palindrome
-	result := isPalindrome(request.Word)
-
-	// Prepare the response
-	response := map[string]interface{}{
-		"is_palindrome": result,
-	}
-
-	// Convert the response to JSON and send it
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(response)
 }
 
 func main() {
