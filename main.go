@@ -354,6 +354,49 @@ func handleRandomNumber(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(response)
 }
 
+func handleCheckPalindrome(w http.ResponseWriter, r *http.Request) {
+	// Check if the request method is POST
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	// Decode the request body
+	var request struct {
+		Word string `json:"word"`
+	}
+
+	err := json.NewDecoder(r.Body).Decode(&request)
+	if err != nil {
+		http.Error(w, "Invalid JSON data", http.StatusBadRequest)
+		return
+	}
+
+	// Function to check if the word is a palindrome
+	isPalindrome := func(word string) bool {
+		runes := []rune(word)
+		length := len(runes)
+		for i := 0; i < length/2; i++ {
+			if runes[i] != runes[length-1-i] {
+				return false
+			}
+		}
+		return true
+	}
+
+	// Check if the given word is a palindrome
+	result := isPalindrome(request.Word)
+
+	// Prepare the response
+	response := map[string]interface{}{
+		"is_palindrome": result,
+	}
+
+	// Convert the response to JSON and send it
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(response)
+}
+
 func main() {
 
 	// Define a route for the root path ("/")
