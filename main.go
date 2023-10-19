@@ -412,6 +412,40 @@ func handleCheckPalindrome(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func handleFactorial(w http.ResponseWriter, r *http.Request) {
+	// Check if the request method is POST
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	// Decode the request body
+	var request struct {
+		Number int `json:"number"`
+	}
+
+	err := json.NewDecoder(r.Body).Decode(&request)
+	if err != nil {
+		http.Error(w, "Invalid JSON data", http.StatusBadRequest)
+		return
+	}
+
+	// Calculate the factorial of the given number
+	var factorial int = 1
+	for i := 1; i <= request.Number; i++ {
+		factorial *= i
+	}
+
+	// Prepare the response
+	response := map[string]interface{}{
+		"factorial": factorial,
+	}
+
+	// Convert the response to JSON and send it
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(response)
+}
+
 func main() {
 
 	// Define a route for the root path ("/")
