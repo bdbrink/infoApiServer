@@ -446,6 +446,55 @@ func handleFactorial(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(response)
 }
 
+func handlePrimes(w http.ResponseWriter, r *http.Request) {
+	// Check if the request method is POST
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	// Decode the request body
+	var request struct {
+		Limit int `json:"limit"`
+	}
+
+	err := json.NewDecoder(r.Body).Decode(&request)
+	if err != nil {
+		http.Error(w, "Invalid JSON data", http.StatusBadRequest)
+		return
+	}
+
+	// Function to check if a number is prime
+	isPrime := func(num int) bool {
+		if num <= 1 {
+			return false
+		}
+		for i := 2; i*i <= num; i++ {
+			if num%i == 0 {
+				return false
+			}
+		}
+		return true
+	}
+
+	// Generate a list of prime numbers up to the given limit
+	primes := []int{}
+	for i := 2; i <= request.Limit; i++ {
+		if isPrime(i) {
+			primes = append(primes, i)
+		}
+	}
+
+	// Prepare the response
+	response := map[string]interface{}{
+		"primes": primes,
+	}
+
+	// Convert the response to JSON and send it
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(response)
+}
+
 func main() {
 
 	// Define a route for the root path ("/")
