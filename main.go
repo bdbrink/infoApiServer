@@ -495,6 +495,43 @@ func handlePrimes(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(response)
 }
 
+func handleWordFrequency(w http.ResponseWriter, r *http.Request) {
+	// Check if the request method is POST
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	// Decode the request body
+	var request struct {
+		Text string `json:"text"`
+	}
+
+	err := json.NewDecoder(r.Body).Decode(&request)
+	if err != nil {
+		http.Error(w, "Invalid JSON data", http.StatusBadRequest)
+		return
+	}
+
+	// Function to count word frequencies in the text
+	wordFrequencies := make(map[string]int)
+	words := strings.Fields(request.Text)
+	for _, word := range words {
+		// Normalize words to lowercase for case-insensitive counting
+		word = strings.ToLower(word)
+		wordFrequencies[word]++
+	}
+
+	// Prepare the response
+	response := map[string]interface{}{
+		"word_frequencies": wordFrequencies,
+	}
+
+	// Convert the response to JSON and send it
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(response)
+}
+
 func main() {
 
 	// Define a route for the root path ("/")
