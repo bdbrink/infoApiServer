@@ -511,6 +511,7 @@ func main() {
 	http.HandleFunc("/random-number", handleRandomNumber)
 	http.HandleFunc("/check-palindrome", handleCheckPalindrome)
 	http.HandleFunc("/factorial", handleFactorial)
+	http.HandleFunc("/primes", handlePrimes)
 
 	// Start the server
 	port := 8080
