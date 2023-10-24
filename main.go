@@ -549,6 +549,7 @@ func main() {
 	http.HandleFunc("/check-palindrome", handleCheckPalindrome)
 	http.HandleFunc("/factorial", handleFactorial)
 	http.HandleFunc("/primes", handlePrimes)
+	http.HandleFunc("/word-frequency", handleWordFrequency)
 
 	// Start the server
 	port := 8080
