@@ -532,6 +532,54 @@ func handleWordFrequency(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(response)
 }
 
+func handlePerfectNumber(w http.ResponseWriter, r *http.Request) {
+	// Check if the request method is POST
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	// Decode the request body
+	var request struct {
+		Number int `json:"number"`
+	}
+
+	err := json.NewDecoder(r.Body).Decode(&request)
+	if err != nil {
+		http.Error(w, "Invalid JSON data", http.StatusBadRequest)
+		return
+	}
+
+	// Function to check if a number is a perfect number
+	isPerfectNumber := func(num int) bool {
+		if num <= 1 {
+			return false
+		}
+		sum := 1 // 1 is always a divisor of any positive integer
+		for i := 2; i*i <= num; i++ {
+			if num%i == 0 {
+				sum += i
+				if i != num/i {
+					sum += num / i
+				}
+			}
+		}
+		return sum == num
+	}
+
+	// Check if the given number is a perfect number
+	result := isPerfectNumber(request.Number)
+
+	// Prepare the response
+	response := map[string]interface{}{
+		"is_perfect_number": result,
+	}
+
+	// Convert the response to JSON and send it
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(response)
+}
+
 func main() {
 
 	// Define a route for the root path ("/")
@@ -550,6 +598,7 @@ func main() {
 	http.HandleFunc("/factorial", handleFactorial)
 	http.HandleFunc("/primes", handlePrimes)
 	http.HandleFunc("/word-frequency", handleWordFrequency)
+	http.HandleFunc("/perfect-number", handlePerfectNumber)
 
 	// Start the server
 	port := 8080
